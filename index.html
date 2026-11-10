@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="SIM-01: simulador embebido con reloj del sistema, disco en RAM y terminal. Sistemas Operativos, Tema 5."
+    />
+    <meta name="theme-color" content="#08120e" />
+    <title>SIM-01 · Simulador embebido</title>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/branding/favicon-32.png" />
+    <link rel="apple-touch-icon" href="./assets/branding/favicon-180.png" />
+
+    <link
+      rel="preload"
+      href="./assets/fonts/space-grotesk-700.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="./assets/fonts/ibm-plex-mono-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="./vendor/xterm/xterm.css" />
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <div class="chassis">
+      <i class="chassis__corner chassis__corner--tl"></i>
+      <i class="chassis__corner chassis__corner--tr"></i>
+      <i class="chassis__corner chassis__corner--bl"></i>
+      <i class="chassis__corner chassis__corner--br"></i>
+
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand__plate">
+            <img src="./assets/branding/logo-programa.png" alt="" width="36" height="36" />
+          </div>
+          <div class="brand__text">
+            <span class="brand__name">SIM-01</span>
+            <span class="brand__sub">MCU VIRTUAL · 64 KiB</span>
+          </div>
+        </div>
+
+        <div class="status" aria-label="Estado del sistema">
+          <span class="led led--on"><i aria-hidden="true"></i>PWR</span>
+          <span class="led led--rtc"><i aria-hidden="true"></i>RTC</span>
+          <span class="led" id="led-disk"><i aria-hidden="true"></i>DISCO</span>
+        </div>
+
+        <div class="uni-plate">
+          <img
+            src="./assets/branding/logo-universidad.png"
+            alt="Universidad Simón Bolívar"
+            width="150"
+            height="31"
+          />
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="panel panel--terminal" aria-label="Terminal del simulador">
+          <header class="panel__head">
+            <div class="panel__title"><span class="panel__index">00</span> UART0 / CONSOLA</div>
+            <div class="panel__meta">
+              <span>115200 8N1</span>
+              <span class="live"><i aria-hidden="true"></i>LIVE</span>
+            </div>
+          </header>
+          <div class="terminal-wrap" id="terminal" aria-label="Consola del simulador"></div>
+        </section>
+
+        <aside class="rail">
+          <section class="panel panel--clock" aria-label="Reloj del sistema">
+            <header class="panel__head">
+              <div class="panel__title"><span class="panel__index">01</span> RELOJ DEL SISTEMA</div>
+              <div class="panel__meta">RTC</div>
+            </header>
+            <div class="clock">
+              <div class="clock__time" id="rtc-time">--:--:--</div>
+              <div class="clock__date" id="rtc-date">—</div>
+
+              <div class="clock__row">
+                <span>UPTIME</span>
+                <span id="uptime">00:00:00</span>
+              </div>
+              <div class="meter meter--thin" aria-hidden="true"><span id="uptime-bar"></span></div>
+
+              <div class="speed" role="group" aria-label="Velocidad del reloj">
+                <button type="button" data-speed="0" aria-pressed="false" aria-label="Pausar el reloj (II)" title="Pausar">II</button>
+                <button type="button" data-speed="1" aria-pressed="true" aria-label="Velocidad x1" title="Tiempo real">x1</button>
+                <button type="button" data-speed="10" aria-pressed="false" aria-label="Velocidad x10" title="Diez veces más rápido">x10</button>
+                <button type="button" data-speed="60" aria-pressed="false" aria-label="Velocidad x60" title="Sesenta veces más rápido">x60</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel panel--disk" aria-label="Disco en RAM">
+            <header class="panel__head">
+              <div class="panel__title"><span class="panel__index">02</span> DISCO EN RAM</div>
+              <div class="panel__meta">RAMFS1</div>
+            </header>
+            <div class="disk">
+              <div class="disk__top">
+                <span class="disk__percent" id="disk-percent">0%</span>
+                <span class="disk__blocks" id="disk-blocks">0 / 117 bloques</span>
+              </div>
+              <div class="meter" aria-hidden="true"><span id="disk-bar"></span></div>
+
+              <div class="disk__meta">
+                <span>INODOS <b id="inode-count">0 / 64</b></span>
+                <span>LECT <b id="disk-reads">0</b></span>
+                <span>ESC <b id="disk-writes">0</b></span>
+              </div>
+              <div class="meter meter--thin" aria-hidden="true"><span id="inode-bar"></span></div>
+
+              <div class="blockmap" id="blockmap">
+                <canvas id="blockmap-canvas" aria-label="Mapa de bloques del disco"></canvas>
+                <div class="tooltip" id="blockmap-tooltip" role="status"></div>
+              </div>
+
+              <div class="legend">
+                <span><i class="sw sw--meta"></i>METADATO</span>
+                <span><i class="sw sw--data"></i>DATO</span>
+                <span><i class="sw sw--free"></i>LIBRE</span>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </main>
+
+      <footer class="hints">
+        <div class="hints__keys">
+          <span><kbd>Ctrl</kbd>+<kbd>L</kbd> limpiar</span>
+          <span><kbd>↑</kbd><kbd>↓</kbd> historial</span>
+          <span><kbd>Tab</kbd> completar</span>
+          <span><kbd>help</kbd> comandos</span>
+        </div>
+        <div class="hints__actions">
+          <button type="button" class="btn btn--danger" id="btn-reset">Reiniciar</button>
+          <button type="button" class="btn" id="btn-export">Exportar</button>
+          <button type="button" class="btn" id="btn-import">Importar</button>
+        </div>
+      </footer>
+
+      <div class="institutional">
+        <img
+          src="./assets/branding/logo-universidad.png"
+          alt="Universidad Simón Bolívar"
+          width="150"
+          height="31"
+        />
+        <span>Universidad Simón Bolívar · Barranquilla y Cúcuta</span>
+        <span class="institutional__right">Sistemas Operativos · Tema 5</span>
+      </div>
+    </div>
+
+    <div class="boot" id="boot">
+      <div class="boot__inner">
+        <div class="boot__icon">
+          <img src="./assets/branding/logo-programa.png" alt="" width="88" height="88" />
+        </div>
+        <div class="boot__title">SIM-01</div>
+        <div class="boot__sub">MCU VIRTUAL · 64 KiB · RAMFS1</div>
+
+        <div class="boot__log">
+          <div class="boot__line"><span class="boot__ok">[ OK ]</span><span data-boot-line=" RTC simulado .............. 14:32:05"> RTC simulado .............. 14:32:05</span></div>
+          <div class="boot__line"><span class="boot__ok">[ OK ]</span><span data-boot-line=" RAM disk ................. 128 bloques / 64 KiB"> RAM disk ................. 128 bloques / 64 KiB</span></div>
+          <div class="boot__line"><span class="boot__ok">[ OK ]</span><span data-boot-line=" RAMFS1 montado ............ raíz /"> RAMFS1 montado ............ raíz /</span></div>
+          <div class="boot__line"><span class="boot__ok">[ OK ]</span><span data-boot-line=" UART0 ..................... 115200 8N1"> UART0 ..................... 115200 8N1</span></div>
+        </div>
+
+        <div class="boot__progress"><i data-boot-progress></i></div>
+        <div class="boot__hint" data-boot-hint>PRESIONE ENTER PARA INICIAR</div>
+        <div class="boot__skip">o haga clic en cualquier parte</div>
+      </div>
+      <div class="boot__foot">Universidad Simón Bolívar · Sistemas Operativos · Tema 5</div>
+    </div>
+
+    <dialog class="dialog" id="reset-dialog">
+      <div class="dialog__head">REINICIAR DISCO</div>
+      <p>
+        Se perderán todos los archivos del disco en RAM. Esta acción no se puede deshacer.
+      </p>
+      <div class="dialog__actions">
+        <button type="button" class="btn" id="reset-cancel">Cancelar</button>
+        <button type="button" class="btn btn--danger" id="reset-confirm">Reiniciar</button>
+      </div>
+    </dialog>
+
+    <input type="file" id="import-input" accept=".img,application/octet-stream" hidden />
+
+    <noscript>
+      <p style="padding: 2rem; color: #f2efe4; font-family: monospace">
+        SIM-01 necesita JavaScript para ejecutar el simulador.
+      </p>
+    </noscript>
+
+    <script src="./vendor/xterm/xterm.js"></script>
+    <script src="./vendor/xterm/addon-fit.js"></script>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

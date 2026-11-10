@@ -1,0 +1,25 @@
+# Plan local (no se versiona)
+PLAN.md
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Python (servidor estático / scripts)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node (solo si se usa para tests opcionales)
+node_modules/
+
+# Entorno
+.env
+.env.local

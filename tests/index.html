@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#08120e" />
+    <meta
+      name="description"
+      content="Pruebas automáticas de SIM-01: reloj simulado, disco en RAM, RAMFS1 e intérprete de comandos."
+    />
+    <title>SIM-01 · Pruebas</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/branding/favicon-32.png" />
+    <style>
+      @font-face {
+        font-family: "Space Grotesk";
+        src: url("../assets/fonts/space-grotesk-700.woff2") format("woff2");
+        font-weight: 700;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "IBM Plex Mono";
+        src: url("../assets/fonts/ibm-plex-mono-400.woff2") format("woff2");
+        font-weight: 400;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "IBM Plex Mono";
+        src: url("../assets/fonts/ibm-plex-mono-500.woff2") format("woff2");
+        font-weight: 500;
+        font-display: swap;
+      }
+
+      :root {
+        color-scheme: dark;
+        --ink: #060d0a;
+        --panel: #101f19;
+        --line: #243a31;
+        --line-2: #315044;
+        --mint: #43e6a6;
+        --coral: #ff6f61;
+        --text: #d7e4dc;
+        --muted: #7f9a8d;
+        --faint: #6f8a7c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 28px 18px 48px;
+        background-color: var(--ink);
+        background-image:
+          radial-gradient(900px 500px at 50% -10%, rgba(67, 230, 166, 0.07), transparent 60%),
+          linear-gradient(rgba(67, 230, 166, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(67, 230, 166, 0.03) 1px, transparent 1px);
+        background-size: auto, 24px 24px, 24px 24px;
+        color: var(--text);
+        font-family: "IBM Plex Mono", "Cascadia Code", Consolas, monospace;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      main {
+        width: min(980px, 100%);
+        margin: 0 auto;
+      }
+
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--line-2);
+      }
+
+      h1 {
+        margin: 0;
+        font-family: "Space Grotesk", "Segoe UI", sans-serif;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      h1 span {
+        color: var(--mint);
+      }
+
+      header a {
+        color: var(--muted);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+
+      header a:hover {
+        color: var(--mint);
+      }
+
+      .summary {
+        margin: 20px 0 8px;
+        padding: 12px 14px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        font-size: 13px;
+        letter-spacing: 0.06em;
+      }
+
+      .summary--pass {
+        border-color: rgba(67, 230, 166, 0.5);
+        color: var(--mint);
+      }
+
+      .summary--fail {
+        border-color: rgba(255, 111, 97, 0.5);
+        color: var(--coral);
+      }
+
+      .summary--pending {
+        color: var(--muted);
+      }
+
+      .test-group {
+        margin-top: 22px;
+      }
+
+      .test-group h2 {
+        margin: 0 0 8px;
+        color: var(--faint);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .test-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        border: 1px solid var(--line);
+        background: var(--panel);
+      }
+
+      .test {
+        display: grid;
+        grid-template-columns: 52px minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: baseline;
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .test:last-child {
+        border-bottom: 0;
+      }
+
+      .test__badge {
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+      }
+
+      .test--pass .test__badge {
+        color: var(--mint);
+      }
+
+      .test--fail .test__badge {
+        color: var(--coral);
+      }
+
+      .test__name {
+        min-width: 0;
+      }
+
+      .test__time {
+        color: var(--faint);
+        font-size: 10px;
+        white-space: nowrap;
+      }
+
+      .test__error {
+        grid-column: 2 / -1;
+        margin: 6px 0 0;
+        padding: 8px 10px;
+        overflow: auto;
+        border-left: 2px solid var(--coral);
+        background: rgba(255, 111, 97, 0.06);
+        color: #ffb4aa;
+        font-size: 11px;
+        white-space: pre-wrap;
+      }
+
+      footer {
+        margin-top: 26px;
+        color: var(--faint);
+        font-size: 10px;
+        letter-spacing: 0.08em;
+      }
+
+      @media (max-width: 560px) {
+        body {
+          padding: 18px 10px 32px;
+        }
+
+        .test {
+          grid-template-columns: 44px minmax(0, 1fr);
+        }
+
+        .test__time {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1><span>SIM-01</span> · Pruebas</h1>
+        <a href="../index.html">Volver al simulador</a>
+      </header>
+
+      <div class="summary summary--pending" id="test-summary">Ejecutando pruebas…</div>
+      <div id="test-results"></div>
+
+      <footer>
+        Harness sin dependencias · Reloj, disco, RAMFS1 e intérprete de comandos.
+      </footer>
+    </main>
+
+    <script type="module">
+      import { count, run } from "./harness.js";
+      import "./clock.test.js";
+      import "./ramdisk.test.js";
+      import "./fs.test.js";
+      import "./shell.test.js";
+
+      const summary = document.querySelector("#test-summary");
+      summary.textContent = `Ejecutando ${count()} pruebas…`;
+
+      run().then((results) => {
+        const failed = results.filter((result) => !result.ok).length;
+        console.log(`SIM-01 tests: ${results.length - failed}/${results.length} superadas`);
+        if (failed > 0) console.error(`${failed} prueba(s) fallaron`);
+      });
+    </script>
+  </body>
+</html>
