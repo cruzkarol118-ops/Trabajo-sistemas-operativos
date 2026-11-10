@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://cruzkarol118-ops.github.io/Trabajo-sistemas-operativos/">Demo en GitHub Pages</a>
+  <a href="https://cruzkarol118-ops.github.io/Trabajo-sistemas-operativos/">Simulador en GitHub Pages</a>
   ·
   <a href="tests/">Pruebas</a>
   ·
@@ -36,7 +36,7 @@ básico:
 No hay backend, no hay frameworks y no hay paso de compilación: HTML, CSS y
 JavaScript ES modules servidos como archivos estáticos.
 
-## Demo
+## Simulador
 
 La versión publicada vive en:
 
