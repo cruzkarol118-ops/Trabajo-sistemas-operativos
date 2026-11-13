@@ -1149,3 +1149,182 @@ body.is-halted .led--rtc i {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Identidad institucional: superficies claras, acento USB              */
+/* Se conservan la geometría de los paneles y la consola oscura.         */
+/* ------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+  --mint: #09843b;
+  --mint-dim: #2c9b52;
+  --green: #09843b;
+  --green-2: #066b30;
+  --amber: #f4b942;
+  --line: #dce7df;
+  --line-2: #c4d7ca;
+  --text: #26362d;
+  --muted: #617268;
+  --faint: #7e8d84;
+  --font-display: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
+  color: var(--text);
+  font-family: var(--font-display);
+  background-color: #f4f7f4;
+  background-image:
+    radial-gradient(900px 480px at 50% -20%, rgba(9, 132, 59, 0.08), transparent 65%),
+    linear-gradient(rgba(9, 132, 59, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(9, 132, 59, 0.025) 1px, transparent 1px);
+}
+
+.chassis {
+  background: #fff;
+  border-color: #dce7df;
+  box-shadow: 0 18px 54px rgba(28, 62, 42, 0.10);
+}
+
+.topbar {
+  border-bottom-color: #e2ebe5;
+  background: #fff;
+}
+
+.brand__name,
+.brand__sub {
+  color: var(--green-2);
+}
+
+.status {
+  color: #52665a;
+}
+
+.led i {
+  background: #edf3ee;
+}
+
+.panel {
+  background: #fff;
+  border-color: #dce7df;
+  box-shadow: 0 5px 18px rgba(26, 66, 41, 0.07);
+}
+
+.panel__head {
+  color: #fff;
+  border-bottom: 2px solid var(--amber);
+  background: var(--green);
+}
+
+.panel__index,
+.live {
+  color: #fff;
+}
+
+.panel__meta {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.clock__time,
+.clock__row span:last-child,
+.disk__meta b {
+  color: #26362d;
+}
+
+.clock__date,
+.clock__row,
+.disk__blocks {
+  color: #617268;
+}
+
+.disk__meta,
+.legend {
+  color: #718077;
+}
+
+.meter {
+  background: #edf3ee;
+  border-color: #dce7df;
+}
+
+.speed,
+.speed button {
+  border-color: #dce7df;
+}
+
+.speed button {
+  color: #53665a;
+}
+
+.speed button:hover,
+.btn:hover {
+  background: rgba(9, 132, 59, 0.08);
+}
+
+.speed button.is-active {
+  background: var(--green);
+  color: #fff;
+}
+
+.hints {
+  color: #52665a;
+  border-top-color: #e2ebe5;
+  background: #f8faf8;
+}
+
+kbd {
+  color: #34483a;
+  background: #fff;
+  border-color: #c4d7ca;
+}
+
+.btn {
+  color: #34483a;
+  border-color: #b8cebe;
+}
+
+.institutional {
+  border-top-color: var(--green);
+  background: #fff;
+  color: var(--green-2);
+  font-family: var(--font-display);
+}
+
+.institutional__right {
+  color: var(--green-2);
+}
+
+.tooltip {
+  background: #fff;
+  color: #26362d;
+  border-color: #c4d7ca;
+}
+
+.dialog {
+  background: #fff;
+  color: #26362d;
+  border-color: #c4d7ca;
+}
+
+.dialog__head {
+  color: var(--green);
+  border-bottom-color: #dce7df;
+}
+
+.dialog p {
+  color: #52665a;
+}
+
+.dialog__actions {
+  border-top-color: #dce7df;
+}
+
+/* La terminal sigue siendo una consola oscura de alto contraste. */
+.panel--terminal .panel__head {
+  background: var(--green);
+}
+
+.terminal-wrap {
+  background:
+    radial-gradient(900px 420px at 18% 0%, rgba(9, 132, 59, 0.10), transparent 60%),
+    #060d0a;
+}
