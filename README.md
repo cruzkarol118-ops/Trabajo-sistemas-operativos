@@ -2,7 +2,7 @@
   <img src="assets/branding/logo-universidad.png" alt="Universidad Simón Bolívar" width="420" />
 </p>
 
-<h1 align="center">SIM-01</h1>
+<h1 align="center">Simulador Discos en RAM, Relojes y Terminales</h1>
 
 <p align="center">
   Simulador embebido didáctico con reloj del sistema, disco en RAM de 64 KiB,
@@ -21,7 +21,7 @@
 
 ## Qué es
 
-**SIM-01** es una máquina virtual mínima que se ejecuta por completo en el
+**Simulador Discos en RAM, Relojes y Terminales (SIM-01)** es una máquina virtual mínima que se ejecuta por completo en el
 navegador. Modela los componentes que suelen aparecer en un sistema embebido
 básico:
 
